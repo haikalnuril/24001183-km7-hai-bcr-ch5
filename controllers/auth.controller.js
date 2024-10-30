@@ -1,14 +1,16 @@
-const {users} = require('../models');
+const { users } = require("../models");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const login = async (req, res) => {
     try {
-        const {email, password} = req.body;
+        const { email, password } = req.body;
         if (!email || !password) {
             res.status(400);
-            throw new Error('Please provide email and password');
+            throw new Error("Please provide email and password");
         }
 
-        const user = await users.findOne({where: {email}});
+        const user = await users.findOne({ where: { email } });
         if (!user) {
             return res.status(401).json({
                 status: "Failed",
@@ -17,30 +19,43 @@ const login = async (req, res) => {
                 data: null,
             });
         }
-        const match = await user.matchPassword(password);
-        if (!match) {
+        if (!bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
                 status: "Failed",
                 message: "Email or Password is incorrect",
                 isSuccess: false,
                 data: null,
             });
+        } else {
+            const token = jwt.sign(
+                {
+                    userId: user.id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                },
+                process.env.JWT_SECRET,
+                { expiresIn: process.env.JWT_EXPIRES_IN }
+            );
+            res.status(200).json({
+                status: "Success",
+                message: "Login success",
+                isSuccess: true,
+                data: {
+                    token,
+                    user,
+                },
+            });
         }
-        res.status(200).json({
-            status: "Success",
-            message: "Login success",
-            isSuccess: true,
-            data: user,
-        });
     } catch (error) {
         res.status(500).json({
             status: "Failed",
-            message: "Failed to login",
+            message: error.message,
             isSuccess: false,
             data: null,
         });
     }
-}
+};
 
 module.exports = {
     login,
