@@ -47,6 +47,7 @@ const login = async (req, res) => {
                 },
             });
         }
+        
     } catch (error) {
         res.status(500).json({
             status: "Failed",
@@ -57,6 +58,37 @@ const login = async (req, res) => {
     }
 };
 
+const register = async (req, res) => {
+    try{
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            res.status(400);
+            throw new Error("Please provide name, email and password");
+        }
+
+        const user = await users.create({
+            name,
+            email,
+            password
+        })
+
+        res.status(200).json({
+            status: "Success",
+            message: "User created successfully",
+            isSuccess: true,
+            data: user,
+        });
+    } catch (error) {
+        res.status(500).json({
+            status: "Failed",
+            message: error.message,
+            isSuccess: false,
+            data: null,
+        });
+    }
+}
+
 module.exports = {
     login,
+    register
 };
