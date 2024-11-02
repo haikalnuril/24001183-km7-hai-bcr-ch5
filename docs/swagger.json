@@ -1,0 +1,16 @@
+{
+    "openapi": "3.0.3",
+    "info": {
+        "title": "CH5-Challenge",
+        "version": "1.0.0",
+        "contact": {}
+    },
+    "servers": [
+        {
+            "url": "{{URL}}"
+        }
+    ],
+    "paths": {
+
+            }
+        }
