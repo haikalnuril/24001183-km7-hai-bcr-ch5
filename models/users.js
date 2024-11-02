@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+const bcrypt = require('bcrypt');
 module.exports = (sequelize, DataTypes) => {
   class users extends Model {
     /**
@@ -11,6 +12,15 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      users.hasMany(models.cars, {
+        foreignKey: 'createdBy',
+        as: 'createdByUser'
+      });
+
+      users.hasMany(models.cars, {
+        foreignKey: 'updatedBy',
+        as: 'updatedByUser'
+      });
     }
   }
   users.init({
@@ -18,10 +28,20 @@ module.exports = (sequelize, DataTypes) => {
     email: DataTypes.STRING,
     password: DataTypes.TEXT,
     photoProfile: DataTypes.TEXT,
-    role: DataTypes.STRING
+    role: DataTypes.ENUM('superadmin', 'admin', 'user'),
   }, {
     sequelize,
+    paranoid: true,
     modelName: 'users',
+    hooks: {
+      // Hash password before saving the user
+      beforeSave: async (user) => {
+        if (user.password) {
+          const salt = await bcrypt.genSalt(10);
+          user.password = await bcrypt.hash(user.password, salt);
+        }
+      },
+    },
   });
   return users;
 };
