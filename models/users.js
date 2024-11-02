@@ -22,6 +22,7 @@ module.exports = (sequelize, DataTypes) => {
     role: DataTypes.STRING
   }, {
     sequelize,
+    paranoid: true,
     modelName: 'users',
     hooks: {
       // Hash password before saving the user

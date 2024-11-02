@@ -21,7 +21,7 @@ const getUsers = async (req, res) => {
 
 const createUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, role } = req.body;
         if (!name || !email || !password) {
             res.status(400);
             throw new Error("Please provide name, email, and password");
@@ -31,6 +31,7 @@ const createUser = async (req, res) => {
             name,
             email,
             password,
+            role
         });
         res.status(201).json({
             status: "Success",
