@@ -35,7 +35,7 @@ module.exports = {
         type: Sequelize.TEXT
       },
       role: {
-        type: Sequelize.STRING,
+        type: Sequelize.ENUM('superadmin', 'admin', 'user'),
         allowNull: false,
         defaultValue: 'user'
       },
