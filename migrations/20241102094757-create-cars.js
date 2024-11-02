@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('cars', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,33 +11,32 @@ module.exports = {
       },
       name: {
         allowNull: false,
-        validate: {
-          len: [3, 100],
-        },
-        type: Sequelize.STRING
-      },
-      email: {
-        allowNull: false,
-        unique: true,
-        validate: {
-          isEmail: true,
-        },
-        type: Sequelize.STRING
-      },
-      password: {
-        allowNull: false,
-        validate: {
-          len: [6, 100],
-        },
-        type: Sequelize.TEXT
-      },
-      photoProfile: {
-        type: Sequelize.TEXT
-      },
-      role: {
         type: Sequelize.STRING,
+        validate: {
+          len: [3, 100]
+        }
+      },
+      model: {
         allowNull: false,
-        defaultValue: 'user'
+        type: Sequelize.STRING,
+      },
+      desc: {
+        allowNull: false,
+        type: Sequelize.TEXT
+      },
+      createdBy: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      updatedBy: {
+        allowNull: false,
+        type: Sequelize.INTEGER
+      },
+      deletedBy: {
+        type: Sequelize.INTEGER
+      },
+      deletedAt: {
+        type: Sequelize.DATE
       },
       createdAt: {
         allowNull: false,
@@ -46,13 +45,10 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
-      },
-      deletedAt: {
-        type: Sequelize.DATE
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('cars');
   }
 };
