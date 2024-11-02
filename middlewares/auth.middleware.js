@@ -35,4 +35,42 @@ const protectedMiddleware = async (req, res, next) => {
     }
 }
 
-module.exports = { protectedMiddleware };
+const adminMiddleware = async (req, res, next) => {
+    try{
+        if(req.user.role == "user"){
+            return res.status(401).json({
+                status: "Failed",
+                message: "Not Authorized as an Admin",
+                isSuccess: false
+            })
+        }
+
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            status: "Failed",
+            message: "Not Authorized, no token",
+        })
+    }
+}
+
+const superAdminMiddleware = async (req, res, next) => {
+    try{
+        if(req.user.role != "superadmin"){
+            return res.status(401).json({
+                status: "Failed",
+                message: "Not Authorized as a Super Admin",
+                isSuccess: false
+            })
+        }
+
+        next();
+    } catch (err) {
+        return res.status(401).json({
+            status: "Failed",
+            message: "Not Authorized, no token",
+        })
+    }
+}
+
+module.exports = { protectedMiddleware, adminMiddleware, superAdminMiddleware };
