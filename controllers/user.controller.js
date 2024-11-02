@@ -2,7 +2,7 @@ const { users } = require("../models");
 
 const getUsers = async (req, res) => {
     try {
-        const Users = await users.findAll();
+        const Users = await users.findAll({ paranoid: false });
         res.status(200).json({
             status: "Success",
             message: "Success to get users",
@@ -18,6 +18,34 @@ const getUsers = async (req, res) => {
         });
     }
 };
+
+const getUserById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await users.findByPk(id);
+        if (!user) {
+            return res.status(404).json({
+                status: "Failed",
+                message: "User not found",
+                isSuccess: false,
+                data: null,
+            });
+        }
+        res.status(200).json({
+            status: "Success",
+            message: "Success to get user",
+            isSuccess: true,
+            data: user,
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: "Failed",
+            message: err.message,
+            isSuccess: false,
+            data: null,
+        });
+    }
+}
 
 const createUser = async (req, res) => {
     try {
@@ -49,16 +77,56 @@ const createUser = async (req, res) => {
     }
 };
 
+const updateUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, email, password, role } = req.body;
+        const user = await users.findByPk(id);
+        if (!user) {
+            return res.status(404).json({
+                status: "Failed",
+                message: "User not found",
+                isSuccess: false,
+                data: null,
+            })
+        }
+
+        const updateUser = await user.update({
+            name,
+            email,
+            password,
+            role
+        })
+        res.status(200).json({
+            status: "Success",
+            message: "Success to update user",
+            isSuccess: true,
+            data: updateUser,
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: "Failed",
+            message: err.message,
+            isSuccess: false,
+            data: null,
+        });
+    }
+}
+
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
-        const user = await users.findByPk(id, { paranoid: false });
+        const user = await users.findByPk(id);
         if (!user) {
-            res.status(404);
-            throw new Error("User not found");
+            return res.status(404).json({
+                status: "Failed",
+                message: "User not found",
+                isSuccess: false,
+                data: null,
+            })
         }
 
-        await user.restore({
+        await user.destroy({
             where: {
                 id,
             },
@@ -81,6 +149,8 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
     getUsers,
+    getUserById,
     createUser,
+    updateUser,
     deleteUser,
 };
