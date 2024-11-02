@@ -48,7 +48,38 @@ const createUser = async (req, res) => {
     }
 };
 
+const deleteUser = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const user = await users.findByPk(id, { paranoid: false });
+        if (!user) {
+            res.status(404);
+            throw new Error("User not found");
+        }
+
+        await user.restore({
+            where: {
+                id,
+            },
+        });
+        res.status(200).json({
+            status: "Success",
+            message: "Success to delete user",
+            isSuccess: true,
+            data: null,
+        });
+    } catch (err) {
+        res.status(500).json({
+            status: "Failed",
+            message: err.message,
+            isSuccess: false,
+            data: null,
+        });
+    }
+};
+
 module.exports = {
     getUsers,
     createUser,
+    deleteUser,
 };
