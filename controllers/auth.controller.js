@@ -24,7 +24,7 @@ const login = async (req, res) => {
                 data: null,
             });
         }
-        
+
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
                 status: "Failed",
@@ -68,13 +68,12 @@ const register = async (req, res) => {
     try{
         const { name, email, password } = req.body;
         if (!name || !email || !password) {
-            res.status(400).json({
+            return res.status(400).json({
                 status: "Failed",
                 message: "Please provide name, email, and password",
                 isSuccess: false,
                 data: null,
             })
-            
         }
 
         const user = await users.create({
