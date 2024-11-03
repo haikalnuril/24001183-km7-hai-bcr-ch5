@@ -152,6 +152,7 @@ const deleteCar = async (req, res) => {
             });
         }
 
+        Car.deletedBy = req.user.id;
         await Car.destroy();
         res.status(200).json({
             status: "Success",
